@@ -4,6 +4,7 @@ require 'beefcake'
 require 'json'
 require 'yajl'
 require 'protobuf'
+require 'oj'
 
 class TestMessage
   include Beefcake::Message
@@ -45,6 +46,7 @@ encodes = {
   :protobuf => lambda { TestProtoMessage.new(obj).encode.to_s },
   :json     => lambda { JSON.dump(TestMessage.new(obj).as_json) },
   :yajl     => lambda { Yajl.dump(TestMessage.new(obj).as_json) },
+  :oj       => lambda { Oj.dump(TestMessage.new(obj).as_json, :mode => :compat) },
   :msgpack  => lambda { MessagePack.pack(TestMessage.new(obj).as_json) }
 }
 
@@ -62,6 +64,7 @@ decodes = {
   :protobuf => lambda { TestProtoMessage.decode(encoded[:protobuf]) },
   :json     => lambda { TestMessage.new(JSON.load(encoded[:json])) },
   :yajl     => lambda { TestMessage.new(Yajl.load(encoded[:yajl])) },
+  :oj       => lambda { TestMessage.new(Oj.load(encoded[:oj])) },
   :msgpack  => lambda { TestMessage.new(MessagePack.unpack(encoded[:msgpack])) }
 }
 
